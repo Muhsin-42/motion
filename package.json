@@ -6,13 +6,22 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "push": "drizzle-kit push:pg",
+    "pull": "drizzle-kit introspect:pg ",
+    "generate": "drizzle-kit generate:pg",
+    "drop": "drizzle-kit drop",
+    "check": "drizzle-kit check:pg",
+    "up": "drizzle-kit up:pg"
   },
   "dependencies": {
+    "dotenv": "^16.4.5",
+    "drizzle-orm": "^0.30.9",
     "eslint-config-prettier": "^9.1.0",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-tailwindcss": "^3.15.1",
     "next": "14.2.2",
+    "postgres": "^3.4.4",
     "prettier": "^3.2.5",
     "react": "^18",
     "react-dom": "^18"
@@ -21,6 +30,7 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "drizzle-kit": "^0.20.17",
     "eslint": "^8",
     "eslint-config-next": "14.2.2",
     "postcss": "^8",
