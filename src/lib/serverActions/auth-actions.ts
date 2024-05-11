@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { FormSchema } from "../types";
 import { z } from "zod";
+import console from "console";
 
 export async function login({ email, password }: z.infer<typeof FormSchema>) {
   const supabase = createClient();
@@ -21,18 +22,8 @@ export async function login({ email, password }: z.infer<typeof FormSchema>) {
 }
 
 export async function signup({ email, password }: z.infer<typeof FormSchema>) {
-  //   const supabase = createClient();
-
-  //   const data = { email, password };
-
-  //   const { error } = await supabase.auth.signUp(data);
-
-  //   if (error) redirect("/error");
-
-  //   revalidatePath("/", "layout");
-  //   redirect("/");
   const supabase = createClient();
-
+  console.log("signingup");
   const { data } = await supabase
     .from("profiles")
     .select("*")
@@ -46,8 +37,12 @@ export async function signup({ email, password }: z.infer<typeof FormSchema>) {
       emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}api/auth/callback`,
     },
   });
-  console.log("respoo ", response);
-  return response;
+  console.log("respon", response);
+  return {
+    error: !!response.error,
+    errorMsg: response?.error?.message || "",
+    user: response.data,
+  };
 }
 
 export async function actionSignUpUser({

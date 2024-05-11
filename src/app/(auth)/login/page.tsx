@@ -113,7 +113,7 @@ const Login = () => {
         </Button>
         <span className="self-center">
           Dont have an account?{" "}
-          <Link href="/signup" className="text-primary">
+          <Link href="/login" className="text-primary">
             Sign Up
           </Link>
         </span>

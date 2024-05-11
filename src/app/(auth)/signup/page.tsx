@@ -13,8 +13,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import React, { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import React, { Suspense, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -24,6 +24,7 @@ import { MailCheck } from "lucide-react";
 import { FormSchema } from "@/lib/types";
 import { signup as actionSignUpUser } from "@/lib/serverActions/auth-actions";
 import Loader from "@/components/global/loader";
+import { toast } from "sonner";
 
 const SignUpFormSchema = z
   .object({
@@ -44,24 +45,26 @@ const SignUpFormSchema = z
 
 const Signup = () => {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  // const searchParams = useSearchParams();
   const [submitError, setSubmitError] = useState("");
   const [confirmation, setConfirmation] = useState(false);
 
-  const codeExchangeError = useMemo(() => {
-    if (!searchParams) return "";
-    return searchParams.get("error_description");
-  }, [searchParams]);
+  // const codeExchangeError = useMemo(() => {
+  //   console.log('codeExchangeError ',searchParams)
+  //   if (!searchParams) return "";
+  //   console.log('codeExchangeError DEsc',searchParams?.get("error_description"))
+  //   return searchParams.get("error_description");
+  // }, [searchParams]);
 
-  const confirmationAndErrorStyles = useMemo(
-    () =>
-      clsx("bg-primary", {
-        "bg-red-500/10": codeExchangeError,
-        "border-red-500/50": codeExchangeError,
-        "text-red-700": codeExchangeError,
-      }),
-    [codeExchangeError]
-  );
+  // const confirmationAndErrorStyles = useMemo(
+  //   () =>
+  //     clsx("bg-primary", {
+  //       "bg-red-500/10": codeExchangeError,
+  //       "border-red-500/50": codeExchangeError,
+  //       "text-red-700": codeExchangeError,
+  //     }),
+  //   [codeExchangeError]
+  // );
 
   const form = useForm<z.infer<typeof SignUpFormSchema>>({
     mode: "onChange",
@@ -71,122 +74,131 @@ const Signup = () => {
 
   const isLoading = form.formState.isSubmitting;
   const onSubmit = async ({ email, password }: z.infer<typeof FormSchema>) => {
-    const { error } = await actionSignUpUser({ email, password });
+    const { error, errorMsg } = await actionSignUpUser({ email, password });
     if (error) {
-      setSubmitError(error.message);
-      form.reset();
-      return;
+      toast.error(errorMsg);
+      setSubmitError(errorMsg || "");
+    } else {
+      toast.success("Check your email.", {
+        description: "An email confirmation has been sent.",
+      });
+      setConfirmation(true);
     }
-    setConfirmation(true);
   };
 
   return (
-    <Form {...form}>
-      <form
-        onChange={() => {
-          if (submitError) setSubmitError("");
-        }}
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="flex w-full flex-col
+    <Suspense fallback={<div>Loading...</div>}>
+      <Form {...form}>
+        <form
+          onChange={() => {
+            if (submitError) setSubmitError("");
+          }}
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex w-full flex-col
         space-y-6 sm:w-[400px]
         sm:justify-center
         "
-      >
-        <Link
-          href="/"
-          className="
+        >
+          <Link
+            href="/"
+            className="
           flex
           w-full
           items-center
           justify-start"
-        >
-          <Image src={Logo} alt="cypress Logo" width={50} height={50} />
-          <span
-            className="text-4xl
-          font-semibold first-letter:ml-2 dark:text-white"
           >
-            cypress.
-          </span>
-        </Link>
-        <FormDescription
-          className="
-        text-foreground/60"
-        >
-          An all-In-One Collaboration and Productivity Platform
-        </FormDescription>
-        {!confirmation && !codeExchangeError && (
-          <>
-            <FormField
-              disabled={isLoading}
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input type="email" placeholder="Email" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              disabled={isLoading}
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input type="password" placeholder="Password" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              disabled={isLoading}
-              control={form.control}
-              name="confirmPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="Confirm Password"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type="submit" className="w-full p-6" disabled={isLoading}>
-              {!isLoading ? "Create Account" : <Loader />}
-            </Button>
-          </>
-        )}
-
-        {submitError && <FormMessage>{submitError}</FormMessage>}
-        <span className="self-center">
-          Already have an account?{" "}
-          <Link href="/login" className="text-primary">
-            Login
+            <Image src={Logo} alt="cypress Logo" width={50} height={50} />
+            <span
+              className="text-4xl
+          font-semibold first-letter:ml-2 dark:text-white"
+            >
+              cypress.
+            </span>
           </Link>
-        </span>
-        {(confirmation || codeExchangeError) && (
-          <>
-            <Alert className={confirmationAndErrorStyles}>
-              {!codeExchangeError && <MailCheck className="size-4" />}
-              <AlertTitle>
-                {codeExchangeError ? "Invalid Link" : "Check your email."}
-              </AlertTitle>
-              <AlertDescription>
-                {codeExchangeError || "An email confirmation has been sent."}
-              </AlertDescription>
-            </Alert>
-          </>
-        )}
-      </form>
-    </Form>
+          <FormDescription
+            className="
+        text-foreground/60"
+          >
+            An all-In-One Collaboration and Productivity Platform
+          </FormDescription>
+          {/* {!confirmation && !codeExchangeError && (
+            <>
+              <FormField
+                disabled={isLoading}
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input type="email" placeholder="Email" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                disabled={isLoading}
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="Password"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                disabled={isLoading}
+                control={form.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="Confirm Password"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button type="submit" className="w-full p-6" disabled={isLoading}>
+                {!isLoading ? "Create Account" : <Loader />}
+              </Button>
+            </>
+          )} */}
+
+          {submitError && <FormMessage>{submitError}</FormMessage>}
+          <span className="self-center">
+            Already have an account?{" "}
+            <Link href="/login" className="text-primary">
+              Login
+            </Link>
+          </span>
+          {/* {(confirmation || codeExchangeError) && (
+            <>
+              <Alert className={confirmationAndErrorStyles}>
+                {!codeExchangeError && <MailCheck className="size-4" />}
+                <AlertTitle>
+                  {codeExchangeError ? "Invalid Link" : "Check your email."}
+                </AlertTitle>
+                <AlertDescription>
+                  {codeExchangeError || "An email confirmation has been sent."}
+                </AlertDescription>
+              </Alert>
+            </>
+          )} */}
+        </form>
+      </Form>
+    </Suspense>
   );
 };
 
