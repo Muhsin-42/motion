@@ -13,8 +13,18 @@ import clsx from "clsx";
 import CustomCard from "@/components/landing-page/custom-card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CardContent, CardDescription, CardTitle } from "@/components/ui/card";
+import { redirect } from "next/navigation";
 
-const HomePage = () => {
+import { createClient } from "@/lib/supabase/server";
+
+const HomePage = async () => {
+  const supabase = createClient();
+
+  const { data, error } = await supabase.auth.getUser();
+  if (error || !data?.user) {
+    redirect("/login");
+  }
+  console.log("user :: ", data);
   return (
     <>
       <section>
@@ -45,7 +55,7 @@ const HomePage = () => {
         "
           >
             <Button
-              variant="secondary"
+              variant="btn-secondary"
               className=" w-full
             rounded-[10px]
             bg-background

@@ -15,5 +15,5 @@
   "[typescriptreact]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "cSpell.words": ["supabase"]
+  "cSpell.words": ["sonner", "supabase"]
 }
