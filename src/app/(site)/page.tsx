@@ -95,8 +95,9 @@ const HomePage = async () => {
       </section>
       <section className="relative">
         <div
-          className="after:content['']
-          before:content['']
+          // after:content['']
+          // before:content['']
+          className="
           flex
           overflow-hidden
           before:absolute
