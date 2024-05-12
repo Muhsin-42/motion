@@ -63,7 +63,7 @@ const HomePage = async () => {
             text-2xl
           "
             >
-              Get Cypress Free
+              Get Motion Free
             </Button>
           </div>
           <div

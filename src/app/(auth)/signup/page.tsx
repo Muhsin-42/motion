@@ -107,12 +107,12 @@ const Signup = () => {
           items-center
           justify-start"
           >
-            <Image src={Logo} alt="cypress Logo" width={50} height={50} />
+            <Image src={Logo} alt="motion Logo" width={50} height={50} />
             <span
               className="text-4xl
           font-semibold first-letter:ml-2 dark:text-white"
             >
-              cypress.
+              motion.
             </span>
           </Link>
           <FormDescription
