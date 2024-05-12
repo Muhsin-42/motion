@@ -34,7 +34,7 @@ export async function signup({ email, password }: z.infer<typeof FormSchema>) {
     email,
     password,
     options: {
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}api/auth/callback`,
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}api/confirm`,
     },
   });
   console.log("respon", response);
