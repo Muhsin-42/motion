@@ -205,7 +205,7 @@ const HomePage = async () => {
           ></div>
         </div>
       </section>
-      <section className="relative">
+      <section className="relative scroll-mt-20" id="testimonial">
         <div
           className="absolute
           top-56
@@ -290,9 +290,11 @@ const HomePage = async () => {
 
       <section
         className="mt-20
+        scroll-mt-20
         px-4
         sm:px-6
       "
+        id="pricing"
       >
         <TitleSection
           title="The Perfect Plan For You"

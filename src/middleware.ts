@@ -3,7 +3,6 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 let m = 1;
 export async function middleware(req: NextRequest) {
-  console.log("midddd ", m++);
   const res = NextResponse.next();
   const supabase = createClient();
 
@@ -15,6 +14,7 @@ export async function middleware(req: NextRequest) {
 
   // Check if the user is logged in
   const isLoggedIn = data?.user;
+  console.log("dataa ", pathname);
   if (!isLoggedIn && !unprotectedRoutes.includes(pathname)) {
     const loginUrl = `${req.nextUrl.origin}/login`;
     return NextResponse.redirect(loginUrl);
@@ -22,7 +22,8 @@ export async function middleware(req: NextRequest) {
 
   // Redirect to / if the user is logged in and trying to access /login or /signup
   if (isLoggedIn && (pathname === "/login" || pathname === "/signup")) {
-    return NextResponse.redirect(`${req.nextUrl.origin}/`);
+    console.log("unnn");
+    return NextResponse.redirect(`${req.nextUrl.origin}/dashboard`);
   }
 
   // Continue to the next middleware or route handler
@@ -30,5 +31,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/login", "/signup", "/protected-route"],
+  matcher: ["/", "/login", "/signup", "/dashboard"],
 };
